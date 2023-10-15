@@ -12,7 +12,7 @@ from unidecode import unidecode
 def importar_csv(caminho_arquivo):
     try:
         # Lê o arquivo CSV e cria um DataFrame sem índice
-        df = pd.read_csv('palavras.csv', index_col=None)
+        df = pd.read_csv('palavras.csv', delimiter = ',', index_col=None)
         return df
 
     except FileNotFoundError:
@@ -21,11 +21,13 @@ def importar_csv(caminho_arquivo):
         print(f"Erro ao importar o arquivo CSV: {e}")
     
 def obter_palavra(): 
+    global palavras
     palavras = importar_csv('palavras.csv')
     print(palavras)
-    a = random.randint(0, 30)
-    palavra = palavras['Palavra'][a].lower()
+    a = random.randint(0, len(palavras))
+    palavra = unidecode(palavras['Palavra'][a].lower())
     print(f'A palavra escolhida foi: {palavra}')
+    
     return palavra
 
 def exibir_palavra_oculta(palavra, letras_tentadas):
@@ -37,6 +39,19 @@ def exibir_palavra_oculta(palavra, letras_tentadas):
             palavra_oculta += "_"
     return palavra_oculta
 
+def validar():
+    
+    # Receber entrada do usuário
+ while True:   
+    letra = input("Digite uma letra: ")
+    if len(letra) == 1 and letra.isalpha():
+        letra_validada = unidecode(letra.lower())
+        return letra_validada
+        break
+    
+    else:
+        print("Por favor, digite exatamente uma letra.")
+    
 def jogo_da_forca(palavra):
     palavra_a_adivinhar = palavra.lower()
     letras_tentadas = []
@@ -47,7 +62,8 @@ def jogo_da_forca(palavra):
     print(exibir_palavra_oculta(palavra_a_adivinhar, letras_tentadas))
 
     while tentativas < tentativas_maximas:
-        letra = input("\nDigite uma letra: ").lower()
+       #letra_sem_validacao = input("\nDigite uma letra: ").lower()
+        letra = validar()
 
         # Verifica se a letra já foi tentada
         if letra in letras_tentadas:
@@ -70,6 +86,9 @@ def jogo_da_forca(palavra):
         # Verifica se o jogador adivinhou a palavra
         if palavra_oculta == palavra_a_adivinhar:
             print("Parabéns! Você adivinhou a palavra.")
+            palavras['Palavra'] = palavras['Palavra'].str.replace(palavra,'')
+            palavras_sem_nan = palavras.dropna()
+            palavras_sem_nan.to_csv('palavras.csv', index=False)
             break
 
     else:
