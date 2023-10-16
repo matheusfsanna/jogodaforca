@@ -1,14 +1,6 @@
 import openai
-import dotenv
 import pandas as pd
-import os
-
-dotenv.load_dotenv()
-
-openai.api_key = os.getenv("openai.api_key")
-openai.organization = os.getenv("org-c0wUdF4mxq11k27ojyd5xysK")
-
-#openai.api_key = "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"
+#openai.api_key = "sua-chave"
 
 # Função para obter o tema escolhido pelo usuário
 def obter_tema_do_usuario():
